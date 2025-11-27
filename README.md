@@ -11,7 +11,6 @@ object detection in real-time (camera or video file), producing:
 
 Project structure (top-level):
 
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/267ab020-ff4b-4650-8ccf-bf568b929cf9" />
 
 
 ```
@@ -78,4 +77,5 @@ you used when fine-tuning. If you used a different YOLO version (Ultralytics
 v4/v5 or custom training), adapt the command accordingly.
 
 ```
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/267ab020-ff4b-4650-8ccf-bf568b929cf9" />
 
