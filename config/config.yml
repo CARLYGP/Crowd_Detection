@@ -6,13 +6,13 @@
 model: "models/best.pt"
 
 # Fuente de video: puede ser índice de cámara (0, 1) o ruta a archivo
-source: "1"
+source: "data/input/input2.mp4"
 
 # Tamaño de entrada para el modelo
 imgsz: 896
 
 # Umbrales de inferencia
-conf: 0.10
+conf: 0.15
 iou: 0.30
 
 # Dispositivo para torch: 'cpu', 'cuda:0', o índice como string que mapeará a cuda:<idx>
