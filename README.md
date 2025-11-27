@@ -70,7 +70,6 @@ training command. An example command to fine-tune a detection model looks like:
 # Example (adjust dataset, model and hyperparameters to your setup):
 yolo task=detect mode=train model=yolov8n.pt data=./data/dataset.yaml epochs=50 imgsz=640 batch=16 lr=0.01
 ```
-
 Replace `yolov8n.pt`, `./data/dataset.yaml`, and hyperparameters with the values
 you used when fine-tuning. If you used a different YOLO version (Ultralytics
 v4/v5 or custom training), adapt the command accordingly.
