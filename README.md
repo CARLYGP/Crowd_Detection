@@ -11,6 +11,9 @@ object detection in real-time (camera or video file), producing:
 
 Project structure (top-level):
 
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/267ab020-ff4b-4650-8ccf-bf568b929cf9" />
+
+
 ```
 CROWD_DETECTION/
   main.py                # CLI runner for local/desktop usage
