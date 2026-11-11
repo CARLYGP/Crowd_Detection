@@ -1,0 +1,7 @@
+
+# Proyecto Remotion
+docs/video/node_modules/
+docs/video/out/
+docs/video/build/
+docs/video/public/
+__pycache__/

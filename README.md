@@ -12,7 +12,7 @@
 
 <p align="center"><img src="docs/en_vivo.gif" width="820" alt="Detección en vivo con mapa de calor y conteo"></p>
 
-<p align="center"><a href="docs/crowd_detection.mp4"><b>▶ Ver el video completo (70 s)</b></a></p>
+<p align="center"><a href="docs/crowd_detection.mp4"><b>▶ Ver el video completo (65 s)</b></a></p>
 
 Sistema de visión por computador que trabaja sobre **cámaras de vigilancia que ya existen**: cuenta cuántas personas
 hay en cada cuadro, lleva el promedio y el pico, y dibuja un **mapa de calor** de las zonas donde la gente se
@@ -26,8 +26,9 @@ concentra. Funciona con un video o con una cámara en vivo, desde la línea de c
 | **Velocidad** | 23,5 FPS de media sobre 2.125 cuadros |
 | **Interfaz** | CLI configurable por YAML + interfaz Gradio con pestañas para subir video o grabar con la cámara |
 
-Las animaciones e imágenes de este README se generan a partir de **las salidas reales que están en el repositorio**
-(`output/` y `results/`), sin volver a dibujar nada a mano: ver [`docs/animacion/generar.py`](docs/animacion/generar.py).
+El video está hecho con [Remotion](https://www.remotion.dev/) (React) a partir de **las salidas reales que están en el
+repositorio**: los videos de `output/`, el CSV por cuadro y las métricas de `results/`. Los contadores van sincronizados
+cuadro a cuadro con el CSV y no hay cifras escritas a mano (ver [`docs/video/`](docs/video/)).
 
 ---
 
@@ -124,7 +125,12 @@ yolo task=detect mode=train model=yolo11s.pt data=dataset.yaml epochs=100 imgsz=
 
 ```bash
 pip install numpy pillow imageio-ffmpeg
-python docs/animacion/generar.py
+python docs/video/preparar.py            # recodifica los videos y exporta los datos reales a docs/video/
+cd docs/video
+npm install
+npx remotion studio                      # vista previa interactiva
+npx remotion render CrowdDetection ../crowd_detection.mp4
+npx remotion still PortadaBanner ../portada.png
 ```
 
 ## Estructura
@@ -144,5 +150,6 @@ src/
 models/best.pt           pesos ajustados
 results/                 curvas y métricas del entrenamiento
 output/                  salidas de ejemplo
-docs/                    video, GIF e imágenes del README (generados por docs/animacion/generar.py)
+docs/                    video, GIF e imágenes del README
+  video/                 proyecto Remotion del video y las portadas (preparar.py exporta los datos)
 ```
