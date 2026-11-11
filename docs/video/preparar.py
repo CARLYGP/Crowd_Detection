@@ -38,6 +38,47 @@ def superpuesto(destino):
     p.wait()
 
 
+def lineas(destino):
+    """Dibujo lineal de la calle (bordes Sobel del cuadro de la cámara), sin los textos de la cámara."""
+    from PIL import ImageDraw, ImageFilter, ImageOps
+    esc = g.cuadro_en(g.RAIZ / "data" / "input" / "input2.mp4", 75).resize((704, 576), Image.LANCZOS)
+    gris = np.asarray(ImageOps.grayscale(esc).filter(ImageFilter.GaussianBlur(1.2))).astype(np.float32)
+    gx, gy = np.zeros_like(gris), np.zeros_like(gris)
+    gx[:, 1:-1] = gris[:, 2:] - gris[:, :-2]
+    gy[1:-1, :] = gris[2:, :] - gris[:-2, :]
+    mag = np.hypot(gx, gy)
+    lo, hi = np.percentile(mag, 70), np.percentile(mag, 98)
+    a = np.clip((mag - lo) / (hi - lo), 0, 1) ** 0.8
+    m = Image.new("L", (704, 576), 255)
+    d = ImageDraw.Draw(m)
+    d.rectangle((0, 0, 470, 62), fill=0)          # fecha y hora de la cámara
+    d.rectangle((480, 490, 704, 576), fill=0)     # "Camera 15"
+    a = a * np.asarray(m.filter(ImageFilter.GaussianBlur(4))) / 255
+    alfa = Image.fromarray((a * 255).astype(np.uint8)).resize((1056, 864), Image.LANCZOS)
+    Image.merge("RGBA", [Image.new("L", alfa.size, v) for v in (125, 211, 252)] + [alfa]).save(destino)
+
+
+def calor_estilo(destino):
+    """Mapa de calor dinámico re-coloreado con la rampa del video, sobre negro (se mezcla con 'screen')."""
+    w, h = 352 * 3, 288 * 3
+    p = subprocess.Popen([FF, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{w}x{h}", "-r", "15.34",
+                          "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p",
+                          "-movflags", "+faststart", str(destino)], stdin=subprocess.PIPE)
+    rampa = g.RAMPA
+    for fc in g.cuadros(g.RAIZ / "output" / "heatmap_salida_detectada.mp4"):
+        a = np.asarray(fc).astype(np.float32)
+        v = np.clip(np.maximum(a[..., 0], a[..., 1]) / 255 + a[..., 0] / 510 - 0.12, 0, 1.2) / 1.2
+        rgb = np.zeros(v.shape + (3,), np.float32)
+        for (t0, c0), (t1, c1) in zip(rampa, rampa[1:]):
+            m = (v >= t0) & (v <= t1)
+            f = ((v - t0) / (t1 - t0))[m][:, None]
+            rgb[m] = np.array(c0) + (np.array(c1) - np.array(c0)) * f
+        rgb *= np.clip(v * 2.5, 0, 1)[..., None]
+        p.stdin.write(Image.fromarray(rgb.astype(np.uint8)).resize((w, h), Image.LANCZOS).tobytes())
+    p.stdin.close()
+    p.wait()
+
+
 def main():
     out = g.RAIZ / "output"
     h264(out / "salida_detectada.mp4", PUB / "deteccion.mp4")
@@ -50,6 +91,8 @@ def main():
     pico = max(range(len(g.CONTEO)), key=lambda i: g.CONTEO[i])
     subprocess.run([FF, "-y", "-loglevel", "error", "-ss", f"{pico / 15.34:.2f}", "-i", str(PUB / "calor.mp4"), "-frames:v", "1",
                     str(PUB / "destacado.png")], check=True)
+    lineas(PUB / "lineas.png")
+    calor_estilo(PUB / "calor_estilo.mp4")
     escena = g.cuadro_en(g.RAIZ / "data" / "input" / "input2.mp4", 75)
     escena.resize((352 * 3, 288 * 3), Image.LANCZOS).save(PUB / "escena.png")
     g.acumular_calor().resize((352 * 3, 288 * 3), Image.LANCZOS).save(PUB / "acumulado.png")

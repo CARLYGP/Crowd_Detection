@@ -7,6 +7,7 @@ import { wipe } from "@remotion/transitions/wipe";
 import datos from "./datos.json";
 import { Acumulado, CalorDinamico, Cierre, Densa, EnVivo, Entrenamiento, Intro, Pipeline, Problema, Resultados } from "./escenas";
 import { C, Fondo, MONO, SANS, Visor } from "./tema";
+import { TarjetaAnimada } from "./Tarjeta";
 
 const T = 20; // frames de cada transición
 const ESCENAS: [string, React.FC, number][] = [
@@ -112,5 +113,6 @@ export const Composiciones: React.FC = () => (
     <Composition id="CrowdDetection" component={CrowdVideo} durationInFrames={DURACION} fps={30} width={1920} height={1080} />
     <Still id="PortadaBanner" component={PortadaBanner} width={1600} height={640} />
     <Still id="PortadaTarjeta" component={PortadaTarjeta} width={1200} height={900} />
+    <Composition id="TarjetaAnimada" component={TarjetaAnimada} durationInFrames={150} fps={30} width={800} height={600} />
   </>
 );
